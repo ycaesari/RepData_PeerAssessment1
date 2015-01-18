@@ -1,11 +1,7 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
-```{r}
+
+```r
 # Redefining inline so will print numbers normally and not in with exponent notation
 knitr::knit_hooks$set(inline = function(x) {
   knitr:::format_sci(x, 'md')
@@ -15,7 +11,8 @@ knitr::knit_hooks$set(inline = function(x) {
 ## Loading and preprocessing the data
 The data is provided in a zip file, so unzip it and read the csv file
 
-```{r}
+
+```r
 unzip("activity.zip")
 activity <- read.csv("activity.csv")
 
@@ -26,46 +23,56 @@ activity_no_na <- activity[rowSums(is.na(activity)) == 0,]
 ## What is mean total number of steps taken per day?
 For this part, I ignore the missing valus in the set
 
-```{r}
+
+```r
 total_steps <- tapply(activity$steps, activity$date, FUN = sum, na.rm=TRUE)
 barplot(total_steps, xlab = "Date", ylab = "Total Steps", main = "Total Number of Steps Taken Each Day", 
         las=2, cex.names=0.5, cex.axis=0.5)
 ```
 
-```{r}
+![plot of chunk unnamed-chunk-3](./PA1_template_files/figure-html/unnamed-chunk-3.png) 
+
+
+```r
 mean_steps <- mean(total_steps)
 median_steps <- median(total_steps)
 ```
 
-The mean number of steps taken per day is `r mean_steps`  
-The median number of steps taken per day is `r median_steps`
+The mean number of steps taken per day is 9354.2295  
+The median number of steps taken per day is 10395
 
 ## What is the average daily activity pattern?
-```{r}
+
+```r
 avg_steps_interval <- tapply(activity$steps, activity$interval, FUN = mean, na.rm=TRUE)
 plot(names(avg_steps_interval), avg_steps_interval, type = "l", 
      ylab = "Avg Steps", xlab = "Interval", main = "Average Steps Taken Avergaed Across all Days")
 ```
 
-```{r}
+![plot of chunk unnamed-chunk-5](./PA1_template_files/figure-html/unnamed-chunk-5.png) 
+
+
+```r
 pos_max_interval = which.max(avg_steps_interval)
 max_interval = avg_steps_interval[pos_max_interval]
 ```
 
-The maximum number of avergae steps is at the `r pos_max_interval` 5-minute interval and its value is `r max_interval`.
+The maximum number of avergae steps is at the 104 5-minute interval and its value is 206.1698.
 
 ## Imputing missing values
 
-```{r}
+
+```r
 row_has_na <- apply(activity, 1, function(x){any(is.na(x))})
 total_rows_with_na <- sum(row_has_na)
 ```
 
-There are `r total_rows_with_na` rows with NA in them.
+There are 2304 rows with NA in them.
 
 I am going to fill the missing values with the mean of the 5-minute interval which it belongs to, which was calculated before.
 
-```{r}
+
+```r
 # Fill that in the places where there are NAs
 activity_no_na <- activity
 activity_no_na[is.na(activity[,"steps"]), "steps"] <- avg_steps_interval[as.character(activity_no_na[is.na(activity[,"steps"]), "interval"])]
@@ -73,27 +80,32 @@ activity_no_na[is.na(activity[,"steps"]), "steps"] <- avg_steps_interval[as.char
 
 Let's have a new histogram and calculate the new mean and median for the total number of steps taken per day
 
-```{r}
+
+```r
 new_total_steps <- tapply(activity_no_na$steps, activity_no_na$date, FUN = sum)
 barplot(new_total_steps, xlab = "Date", ylab = "Total Steps", 
         main = "Total Number of Steps Taken Each Day (No NAs)", 
         las=2, cex.names=0.5, cex.axis=0.5)
 ```
 
-```{r}
+![plot of chunk unnamed-chunk-9](./PA1_template_files/figure-html/unnamed-chunk-9.png) 
+
+
+```r
 new_mean_steps <- mean(new_total_steps)
 new_median_steps <- median(new_total_steps)
 ```
 
-The mean number of steps taken per day (no NAs) is `r new_mean_steps`  
-The median number of steps taken per day (no NAs) is `r new_median_steps`
+The mean number of steps taken per day (no NAs) is 10766.1886792453  
+The median number of steps taken per day (no NAs) is 10766.1886792453
 
 We can see that the values differ from the first part of the assignment.  
 The impact of imputing missing data on the estimates of the total daily number of steps, with the method that I chose, caused the number of steps to increase per day.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 library(datasets)
 library(ggplot2)
 library(reshape2)
@@ -108,3 +120,5 @@ ggplot(avg_steps_interval_melt, aes(interval, avg_steps)) +
         geom_line(color="red") +
         facet_wrap(~daytype, nrow=2)
 ```
+
+![plot of chunk unnamed-chunk-11](./PA1_template_files/figure-html/unnamed-chunk-11.png) 
