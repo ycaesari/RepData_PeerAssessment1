@@ -25,11 +25,12 @@ activity_no_na <- activity[rowSums(is.na(activity)) == 0,]
 
 ## What is mean total number of steps taken per day?
 For this part, I ignore the missing valus in the set
+I calculate the total steps for each day and then I build a histogram of those values.
 
 ```{r}
 total_steps <- tapply(activity$steps, activity$date, FUN = sum, na.rm=TRUE)
-barplot(total_steps, xlab = "Date", ylab = "Total Steps", main = "Total Number of Steps Taken Each Day", 
-        las=2, cex.names=0.5, cex.axis=0.5)
+hist(total_steps, main = "Histogran of Total Steps", xlab = "Number of steps", 
+     ylab = "Number of days");
 ```
 
 ```{r}
@@ -75,9 +76,8 @@ Let's have a new histogram and calculate the new mean and median for the total n
 
 ```{r}
 new_total_steps <- tapply(activity_no_na$steps, activity_no_na$date, FUN = sum)
-barplot(new_total_steps, xlab = "Date", ylab = "Total Steps", 
-        main = "Total Number of Steps Taken Each Day (No NAs)", 
-        las=2, cex.names=0.5, cex.axis=0.5)
+hist(total_steps, main = "Histogran of Total Steps (No NAs)", xlab = "Number of steps", 
+     ylab = "Number of days");
 ```
 
 ```{r}
